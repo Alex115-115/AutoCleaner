@@ -5,12 +5,31 @@ use gui::launch_gui;
 use std::{
     env, fs,
     io::{self},
+    os::windows::process::CommandExt,
 };
+use tray::start_tray_icon;
+use winapi::um::winbase::CREATE_NO_WINDOW;
 
+mod app;
 mod cleanup;
 mod config;
-mod app;
 mod gui;
+mod tray;
+
+/// Launches both the GUI and the system tray icon as background processes.
+fn launch_gui_and_tray() -> io::Result<()> {
+    let _ = std::process::Command::new(std::env::current_exe().unwrap())
+        .arg("tray")
+        .creation_flags(CREATE_NO_WINDOW)
+        .spawn();
+
+    let _ = std::process::Command::new(std::env::current_exe().unwrap())
+        .arg("gui")
+        .creation_flags(CREATE_NO_WINDOW)
+        .spawn();
+
+    Ok(())
+}
 
 /// Entry point for the AutoCleaner application.
 fn main() -> io::Result<()> {
@@ -22,10 +41,14 @@ fn main() -> io::Result<()> {
                 launch_gui();
                 Ok(())
             }
+            "tray" => {
+                start_tray_icon();
+                Ok(())
+            }
             _ => Ok(()),
         };
     } else {
-        launch_gui();
+        launch_gui_and_tray()?
     }
 
     Ok(())

@@ -460,12 +460,15 @@ name = "autocleaner"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "crossbeam-channel",
  "dirs",
  "eframe",
  "rfd",
  "serde",
  "serde_json",
+ "trayicon",
  "walkdir",
+ "winapi",
 ]
 
 [[package]]
@@ -884,6 +887,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a97769d94ddab943e4510d138150169a2758b5ef3eb191a9ee688de3e23ef7b3"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "crossbeam-channel"
+version = "0.5.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "06ba6d68e24814cb8de6bb986db8222d3a027d15872cabc0d18817bc3c0e4471"
+dependencies = [
+ "crossbeam-utils",
 ]
 
 [[package]]
@@ -3247,6 +3259,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "trayicon"
+version = "0.2.0"
+dependencies = [
+ "winapi",
+]
+
+[[package]]
 name = "ttf-parser"
 version = "0.25.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4436,4 +4455,5 @@ dependencies = [
  "quote",
  "syn 1.0.109",
 ]
+
 

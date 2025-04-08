@@ -2,6 +2,7 @@
 name = "autocleaner"
 version = "0.1.0"
 edition = "2021"
+include = ["resources/icon.ico", "src/**", "Cargo.toml"]
 
 [dependencies]
 eframe = "0.27"
@@ -11,6 +12,17 @@ dirs = "5.0"
 rfd = "0.13"
 chrono = "0.4"
 walkdir = "2.4"
+winapi = { version = "0.3.9", features = [
+    "winuser",
+    "windef",
+    "minwindef",
+    "shellapi",
+    "libloaderapi",
+    "commctrl",
+    "basetsd",
+] }
+crossbeam-channel = "0.5"
+trayicon = { path = "../thirdparty/trayicon/" }
 
 [[bin]]
 name = "autocleaner"
