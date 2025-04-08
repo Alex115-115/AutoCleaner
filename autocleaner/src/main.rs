@@ -14,6 +14,7 @@ mod app;
 mod cleanup;
 mod config;
 mod gui;
+mod startup;
 mod tray;
 
 /// Launches both the GUI and the system tray icon as background processes.

@@ -2,11 +2,13 @@ use crate::{
     cleanup::{remove_old_files, scan_folder},
     config::{save_config, FolderConfig, TrackedFolder},
     fs, get_config_path,
+    startup::{get_startup_shortcut_path, is_startup_enabled, set_startup},
 };
 
 pub struct AutoCleanerApp {
     pub config: FolderConfig,
     pub log: String,
+    pub run_at_startup: bool,
 }
 
 impl Default for AutoCleanerApp {
@@ -20,6 +22,7 @@ impl Default for AutoCleanerApp {
         };
 
         Self {
+            run_at_startup: get_startup_shortcut_path().exists(),
             config,
             log: String::new(),
         }
@@ -93,6 +96,20 @@ impl eframe::App for AutoCleanerApp {
             }
 
             save_config(&self.config);
+
+            ui.separator();
+            self.run_at_startup = is_startup_enabled();
+
+            if ui
+                .checkbox(&mut self.run_at_startup, "Run at Windows startup")
+                .clicked()
+            {
+                set_startup(self.run_at_startup);
+                self.log.push_str(&format!(
+                    "🔁 Startup {}abled\n",
+                    if self.run_at_startup { "en" } else { "dis" }
+                ));
+            }
 
             ui.separator();
             ui.horizontal(|ui| {
