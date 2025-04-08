@@ -1,9 +1,14 @@
+use crate::{
+    config::get_config_path,
+};
 use gui::launch_gui;
 use std::{
-    env,
+    env, fs,
     io::{self},
 };
 
+mod cleanup;
+mod config;
 mod app;
 mod gui;
 
