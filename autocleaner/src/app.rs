@@ -5,6 +5,19 @@ use crate::{
     startup::{get_startup_shortcut_path, is_startup_enabled, set_startup},
 };
 
+/// The main application struct for AutoCleaner.
+///
+/// `AutoCleanerApp` holds the state and configuration for the application, including:
+/// - The folder configuration used to determine which directories to monitor or clean.
+/// - A log string that captures recent activity or output.
+/// - A flag indicating whether the app should automatically run at startup.
+///
+/// # Fields
+///
+/// - `config`: The [`FolderConfig`] used to store information about which folders should be cleaned and how.
+/// - `log`: A string buffer containing the latest log output, usually updated after operations.
+/// - `run_at_startup`: Whether the app should be scheduled to run automatically on system startup.
+///
 pub struct AutoCleanerApp {
     pub config: FolderConfig,
     pub log: String,
@@ -12,6 +25,20 @@ pub struct AutoCleanerApp {
 }
 
 impl Default for AutoCleanerApp {
+    /// Creates a default instance of [`AutoCleanerApp`].
+    ///
+    /// This implementation attempts to load the saved folder configuration from disk.
+    /// If the config file exists and can be read and parsed, it is used.
+    /// Otherwise, a default [`FolderConfig`] is used instead.
+    ///
+    /// The `run_at_startup` flag is initialized based on the presence of a startup shortcut.
+    /// The `log` field is initialized as an empty string.
+    ///
+    /// # Behavior
+    /// - Reads the config from the path returned by [`get_config_path()`].
+    /// - Parses the config using `serde_json`. If parsing fails, it falls back to `FolderConfig::default()`.
+    /// - Checks for the existence of the startup shortcut via [`get_startup_shortcut_path()`].
+    ///
     fn default() -> Self {
         let config_path = get_config_path();
         let config = if config_path.exists() {
@@ -30,8 +57,32 @@ impl Default for AutoCleanerApp {
 }
 
 impl eframe::App for AutoCleanerApp {
+    /// Updates the user interface on each frame.
+    ///
+    /// This method is called by `eframe` every frame to redraw the GUI and handle user interactions.
+    /// It includes:
+    /// - Handling window events.
+    /// - Displaying and updating tracked folders.
+    /// - Adding new folders to track using a folder picker.
+    /// - Running scans and cleanup operations based on file age.
+    /// - Managing Windows startup behavior.
+    /// - Displaying a scrollable log of actions and events.
+    ///
+    /// # UI Breakdown
+    ///
+    /// - **Add Folder**: Opens a folder picker and adds the selected folder to tracking, if not already tracked.
+    /// - **Tracked Folders**: Shows a list of currently tracked folders with:
+    ///   - A slider to set how many days old files must be to qualify for scanning/deletion.
+    ///   - Buttons to scan, delete, or untrack each folder.
+    /// - **Startup Toggle**: Lets the user choose whether the app should run at Windows startup.
+    /// - **Log Viewer**: A scrollable area where recent events (like added folders or file deletions) are displayed.
+    ///
     fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
         use eframe::egui::{CentralPanel, ScrollArea};
+
+        for event in ctx.input(|i| i.viewport().events.clone()) {
+            if matches!(event, eframe::egui::ViewportEvent::Close) {}
+        }
 
         CentralPanel::default().show(ctx, |ui| {
             ui.heading("AutoCleaner");
